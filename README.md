@@ -40,6 +40,7 @@ To run this project locally, follow these steps:
 
 The project follows this directory structure:
 
+```
 Real-Time-Object-Detection/
 │
 ├── data/
@@ -56,6 +57,7 @@ Real-Time-Object-Detection/
 ├── requirements.txt
 ├── README.md
 └── main.py
+```
 
 - data/: Contains video and class names files.
 - src/: Contains the project source code.
