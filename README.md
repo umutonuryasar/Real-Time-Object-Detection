@@ -66,9 +66,9 @@ Real-Time-Object-Detection/
 
 ## Requirements
 
-Python 3.x
-OpenCV (opencv-python)
-Ultralytics (ultralytics)
+- Python 3.x
+- OpenCV (opencv-python)
+- Ultralytics (ultralytics)
 
 You can install the required packages using pip as mentioned in the installation steps.
 
