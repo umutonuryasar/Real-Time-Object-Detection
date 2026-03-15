@@ -1,77 +1,84 @@
 # Real-Time Object Detection
 
-This project demonstrates real-time object detection using the YOLO (You Only Look Once) model. It allows you to perform object detection on a video file and draw bounding boxes around detected objects with their class labels and confidence scores.
+Real-time object detection pipeline using YOLOv8, built with Python and OpenCV. Processes video streams with per-frame inference, bounding box rendering, and confidence-thresholded class filtering.
 
-## Table of Contents
+**Stack:** Python · YOLOv8 (Ultralytics) · OpenCV · PyTorch
 
-- [Installation](#installation)
-- [Usage](#usage)
-- [Project Structure](#project-structure)
-- [Requirements](#requirements)
-- [License](#license)
+---
 
-## Installation
+## Overview
 
-To run this project locally, follow these steps:
+This project implements a real-time detection pipeline around YOLOv8n — the nano variant of the YOLOv8 family, optimized for low-latency inference. The architecture follows a single-stage detection approach: a shared backbone extracts multi-scale features, a neck aggregates them via PANet-style fusion, and decoupled heads produce class and box predictions independently.
 
-1. Clone the repository to your local machine:
+Key design decisions:
 
-   ```bash
-   git clone https://github.com/umutonuryasar/Real-Time-Object-Detection.git
-   cd Real-Time-Object-Detection
+- **YOLOv8n** selected for real-time performance on CPU/GPU without sacrificing meaningful accuracy on standard classes
+- **Decoupled heads** (separate classification and regression branches) improve training stability compared to coupled head designs in earlier YOLO versions
+- **Confidence thresholding** applied post-inference to filter low-quality detections before rendering
 
-2. Install the required Python packages using pip:
-    
-    ```bash
-    pip install -r requirements.txt
+---
 
-## Usage
+## Architecture Notes
 
-1. Make sure you have your video file (sample_video.mp4) and class names file (classes.txt) in the data/ directory. You can customize these files as needed.
+YOLOv8 uses a CSPDarknet-based backbone with C2f modules (Cross Stage Partial with two bottlenecks), which improves gradient flow compared to the C3 modules in YOLOv5. The neck uses a BiFPN-inspired feature pyramid for multi-scale detection — critical for handling objects at varying scales in a single forward pass.
 
-2. Run the object detection script from the project root:
-    
-    ```bash
-    python main.py
+This project uses the `yolov8n.pt` pretrained checkpoint (COCO-trained, 80 classes, ~3.2M parameters) for zero-shot inference on standard object categories.
 
-3. The object detection results will be displayed in a 'Object Detection' window. Press 'q' to exit the application.
+---
 
 ## Project Structure
-
-The project follows this directory structure:
 
 ```
 Real-Time-Object-Detection/
 │
 ├── data/
-│   ├── sample_video.mp4
-│   ├── classes.txt
+│   ├── sample_video.mp4      # Input video
+│   ├── classes.txt           # Class label mapping
 │   └── yolo-Weights/
-│       └── yolov8n.pt
+│       └── yolov8n.pt        # Pretrained YOLOv8n checkpoint
 │
 ├── src/
 │   ├── __init__.py
-│   ├── object_detection.py
-│   └── utils.py
+│   ├── object_detection.py   # Core inference loop
+│   └── utils.py              # Bounding box rendering, label formatting
 │
 ├── requirements.txt
-├── README.md
-└── main.py
+├── main.py                   # Entry point
+└── README.md
 ```
 
-- data/: Contains video and class names files.
-- src/: Contains the project source code.
-- requirements.txt: Lists project dependencies.
-- main.py: Entry point for the project.
+---
 
-## Requirements
+## Installation
 
-- Python 3.x
-- OpenCV (opencv-python)
-- Ultralytics (ultralytics)
+```bash
+git clone https://github.com/umutonuryasar/Real-Time-Object-Detection.git
+cd Real-Time-Object-Detection
+pip install -r requirements.txt
+```
 
-You can install the required packages using pip as mentioned in the installation steps.
+**Requirements:** Python 3.x · OpenCV (`opencv-python`) · Ultralytics (`ultralytics`)
+
+---
+
+## Usage
+
+Place your video file at `data/sample_video.mp4`, then:
+
+```bash
+python main.py
+```
+
+Detections render in a live window. Press `q` to exit.
+
+---
+
+## Relation to Current Work
+
+This project serves as a practical baseline for understanding single-stage detection pipelines. Current research extends this direction toward **transformer-based detectors** (RT-DETR) and **knowledge distillation** for improving the speed-accuracy trade-off — work ongoing as part of Stanford CS229.
+
+---
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+MIT — see [LICENSE](LICENSE)
